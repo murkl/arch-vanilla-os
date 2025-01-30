@@ -21,7 +21,7 @@ set -E          # ERR trap inherited by shell functions (errtrace)
 : "${FORCE:=false}" # FORCE=true ./installer.sh
 
 # SCRIPT
-VERSION='1.8.0'
+VERSION='1.8.1'
 
 # GUM
 GUM_VERSION="0.13.0"
@@ -1529,7 +1529,7 @@ exec_install_shell_enhancement() {
             [ "$DEBUG" = "true" ] && sleep 1 && process_return 0 # If debug mode then return
 
             # Install packages
-            local packages=(git starship eza bat fastfetch mc btop nano neovim python-pynvim man-db bash-completion nano-syntax-highlighting ttf-firacode-nerd ttf-nerd-fonts-symbols)
+            local packages=(git starship eza bat zoxide fd fzf fastfetch mc btop nano neovim python-pynvim man-db bash-completion nano-syntax-highlighting ttf-firacode-nerd ttf-nerd-fonts-symbols)
             chroot_pacman_install "${packages[@]}"
 
             # Create fastfetch config dirs
@@ -1554,6 +1554,9 @@ exec_install_shell_enhancement() {
                     echo ''
                     echo '# Source user aliases'
                     echo 'test -f "$HOME/.aliases" && source "$HOME/.aliases"'
+                    echo ''
+                    echo '# Init zoxide'
+                    echo 'command -v zoxide &>/dev/null && zoxide init fish | source'
                     echo ''
                     echo '# Init starship promt (except tty)'
                     echo 'if not tty | string match -q "/dev/tty*"'
@@ -1612,7 +1615,7 @@ exec_install_shell_enhancement() {
                 echo '[[ $- != *i* ]] && return'
                 echo ''
                 echo ' # Export systemd environment vars from ~/.config/environment.d/* (tty only)'
-                echo '[[ ${SHLVL} == 1 ]] && [[ $(tty) =~ /dev/tty[0-9]* ]] && export $(/usr/lib/systemd/user-environment-generators/30-systemd-environment-d-generator | xargs)'
+                echo '[[ ${SHLVL} == 1 ]] && [ -z "${DISPLAY}" ] && export $(/usr/lib/systemd/user-environment-generators/30-systemd-environment-d-generator | xargs)'
                 echo ''
                 echo '# Source aliases'
                 echo 'source "${HOME}/.aliases"'
